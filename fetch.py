@@ -1,3 +1,8 @@
+# Fetch - this is run as a cron (or manually)
+# Each run will hit the Dog CEO API, retrieve image and derive breed from filename.
+# We also generate the goodboy score using super secret machine learning algorithms.
+# The image gets normalised and saved as JPG on public webserver, along with TXT containing
+# breed and GBScore.
 import requests
 from PIL import Image
 from io import BytesIO

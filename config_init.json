@@ -1,4 +1,5 @@
 {
+    "comment": "Initial config file template. Fill this in for a good time"
     "webex_bot_access_token": "XXXYYY",
     "webex_bot_system_id": "XXXYYY",
     "webex_bot_person_id": "XXXYYY",

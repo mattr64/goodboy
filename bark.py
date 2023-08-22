@@ -1,3 +1,8 @@
+# Bark - this is triggered by a cron (or manually if you like)
+# and deals with sending batches of messages using the Teams API
+# 
+# Need to fix the teams exception in threading (not hit it yet but prob won't work if we do)
+#
 from webexteamssdk import WebexTeamsAPI
 from pymongo import MongoClient
 import os
