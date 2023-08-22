@@ -3,7 +3,8 @@
 # 
 # TO DO: Weather delivery from DB if exists
 #
-import webexteamssdk # Import the whole thing otherwise the exceptions module complains, fixes batching
+import webexteamssdk # Import the whole thing
+
 from pymongo import MongoClient
 import os
 import json
@@ -164,5 +165,5 @@ def send_daily_good_boy():
         results = list(executor.map(send_message, subscribers))
 
 
-api = WebexTeamsAPI(access_token=BOT_TOKEN)
+api = webexteamssdk.WebexTeamsAPI(access_token=BOT_TOKEN)
 send_daily_good_boy()
