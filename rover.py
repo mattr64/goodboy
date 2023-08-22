@@ -14,6 +14,7 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Prob put this on Git soon innit                 #
 # # # # # # # # # # # # # # # # # # # # # # # # # #
+# TO DO: Abstract the conversation elements away to a JSON file to make things cleaner
 
 from flask import Flask, request
 from datetime import datetime
@@ -78,6 +79,9 @@ def create_webhook(url):
 def send_message_to_webex(room_id, message):
     api.messages.create(roomId=room_id, markdown=message)
 
+# Changed from using person to room for unique subscriptions. 
+# This way, one person can sign up many rooms (group chats, etc.),
+# and others can unsubscribe a room if they are inside the room.
 def handle_subscription(person_id, person_email, room_id):
     subscriber = {
         "personEmail": person_email,
@@ -137,10 +141,10 @@ def webhook():
     # make it all lower case
     message_text = message_text.lower()
     
-    # Message processing - the order can be important for catch-alls. The top three stay at the top - 
+    # Message processing - the order is important. The top four stay at the top.
     # people should be able to remove their entry from the DB with unsubscribe ANYWHERE in the message and 'stop' on one line.
-    # Fun commands are always after these three.
-    # UNSUB is always first, as a catch-all if someone says 'unsubscribe'
+    # Fun commands are always after these four.
+    # UNSUB is always first, as a catch-all if someone says 'unsubscribe' in the message.
     # Matching 'subscribe explicitly is then important, and then we need to do a 'in' because in group chats we can never address the bot without mentioning it, so the message will never 'just be' subscribe.
     
     if 'unsubscribe' in message_text:
