@@ -1,0 +1,11 @@
+{
+    "webex_bot_access_token": "XXXYYY",
+    "webex_bot_system_id": "XXXYYY",
+    "webex_bot_person_id": "XXXYYY",
+    "webex_webhook_url": "https://webexapis.com/v1/webhooks",
+    "bot_webhook_url": "ENDPOINT WHERE ROVER.PY IS LISTENING",
+    "db_username": "USER",
+    "db_password": "PASS",
+    "db_name": "goodboy",
+    "db_collection": "subscribers"
+}
