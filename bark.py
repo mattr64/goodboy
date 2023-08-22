@@ -3,7 +3,7 @@
 # 
 # Need to fix the teams exception in threading (not hit it yet but prob won't work if we do)
 #
-from webexteamssdk import WebexTeamsAPI
+import webexteamssdk # Import the whole thing otherwise the exceptions module complains
 from pymongo import MongoClient
 import os
 import json
