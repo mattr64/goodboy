@@ -12,7 +12,6 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # #
 # mabarber@cisco.com / 'Good Boy' on Cisco Webex  #
 # # # # # # # # # # # # # # # # # # # # # # # # # #
-# Prob put this on Git soon innit                 #
 # # # # # # # # # # # # # # # # # # # # # # # # # #
 # TO DO: Abstract the conversation elements away to a JSON file to make things cleaner
 
