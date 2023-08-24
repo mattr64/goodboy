@@ -1,3 +1,4 @@
+# Stop trying to make fetch happen
 import requests
 from PIL import Image
 from io import BytesIO
@@ -9,9 +10,10 @@ from multiprocessing import Process
 # Go get secrets from the config
 with open('/opt/gbb/config.json') as f:
     config = json.load(f)
-
+# Use the cat API in the secrets file
 cat_api_token = config['cat_api_key']
 
+# Use the Dog CEO API to fetch the dog of the day.
 def fetch_dog():
     print("Fetching dog")
     response = requests.get("https://dog.ceo/api/breeds/image/random")
@@ -33,6 +35,8 @@ def fetch_dog():
     process_image(image_response.content, "/var/www/goodboy.robot64.com/fetch/dog.jpg")
     save_text(breed, goodness_score, "/var/www/goodboy.robot64.com/fetch/dog.txt")
     print("fetched dog")
+
+# Use the capy.lol api to grab the capy of the day
 def fetch_capy():
     print("Fetching capy")
     response = requests.get("https://api.capy.lol/v1/capybaras?random=true&take=1")
@@ -47,9 +51,10 @@ def fetch_capy():
     save_text(description, capy_chill, "/var/www/goodboy.robot64.com/fetch/capy.txt")
     print("fetched capy")
 
+# Use the cat API to fetch the cat of the day
 def fetch_cat():
     print("Fetching cat")
-    # Step 1: Get a random cat image ID
+    # We first need to get the UID for the cat image which is returned as JSON
     response = requests.get(
         "https://api.thecatapi.com/v1/images/search?limit=1",
         headers={"x-api-key": cat_api_token}
@@ -59,7 +64,7 @@ def fetch_cat():
     image_url = json_data[0]['url']
     image_response = requests.get(image_url)
 
-    # Step 2: Get additional information for the cat image
+    # Using this UID we re-query the API and grab the image URL and breed/desc if available
     response = requests.get(
         f"https://api.thecatapi.com/v1/images/{image_id}",
         headers={"x-api-key": cat_api_token}
@@ -73,12 +78,15 @@ def fetch_cat():
         breed_name = "None available"
         description = "None available"
 
+    # Use extremely advanced algorithms to generate the cattitude score
     cattitude = random.randint(6, 10)
 
     process_image(image_response.content, "/var/www/goodboy.robot64.com/fetch/cat.jpg")
     save_text(f"{breed_name}", cattitude, "/var/www/goodboy.robot64.com/fetch/cat.txt")
     print("Fetched cat")
 
+# Image processing is abstracted out to a function as all three animals use it
+# This function converts to RGB, re-sizes and re-saves as JPEG so we can be sure webex will handle it
 def process_image(image_content, save_path):
     print("Processing image")
     # Open image from bytes
@@ -88,7 +96,7 @@ def process_image(image_content, save_path):
     if image.mode == 'P':
         image = image.convert("RGB")
         
-    # Your existing code for resizing and other operations
+    # Resize to 800 on max edge
     max_dimension = 800
     if image.width > image.height:
         factor = max_dimension / image.width
@@ -105,6 +113,7 @@ def save_text(description, score, save_path):
     with open(save_path, 'w') as file:
         file.write(f"{description}\n{score}")
 
+# Some paralleling code to speed up fetching. Totally not needed. But why not.
 def runInParallel(*fns):
   proc = []
   for fn in fns:
