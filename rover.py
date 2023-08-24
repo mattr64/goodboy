@@ -329,6 +329,12 @@ def webhook():
     elif 'speak' in message_text:
         response_message = "Bark! Woof! Ruff ruff! 🗣️"
         send_message_to_webex(room_id, response_message)
+    elif 'meow' in message_text:
+        response_message = "*Bats ball of string across the room*"
+        send_message_to_webex(room_id, response_message)
+    elif 'hup' in message_text:
+        response_message = "OK I pull up"
+        send_message_to_webex(room_id, response_message)
     
     return '', 204
 

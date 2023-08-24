@@ -4,6 +4,7 @@ from io import BytesIO
 import re
 import random
 import json
+from multiprocessing import Process
 
 # Go get secrets from the config
 with open('/opt/gbb/config.json') as f:
@@ -12,6 +13,7 @@ with open('/opt/gbb/config.json') as f:
 cat_api_token = config['cat_api_key']
 
 def fetch_dog():
+    print("Fetching dog")
     response = requests.get("https://dog.ceo/api/breeds/image/random")
     image_url = response.json()['message']
     image_response = requests.get(image_url)
@@ -29,9 +31,10 @@ def fetch_dog():
 
     goodness_score = random.randint(10, 16)
     process_image(image_response.content, "/var/www/goodboy.robot64.com/fetch/dog.jpg")
-    save_text(breed, goodness_score, "/var/www/goodboy.robot64.com/fetch/breed.txt")
-
+    save_text(breed, goodness_score, "/var/www/goodboy.robot64.com/fetch/dog.txt")
+    print("fetched dog")
 def fetch_capy():
+    print("Fetching capy")
     response = requests.get("https://api.capy.lol/v1/capybaras?random=true&take=1")
     json_data = response.json()
     capy_data = json_data['data'][0]
@@ -42,9 +45,10 @@ def fetch_capy():
     description = capy_data['alt']
     process_image(image_response.content, "/var/www/goodboy.robot64.com/fetch/capy.jpg")
     save_text(description, capy_chill, "/var/www/goodboy.robot64.com/fetch/capy.txt")
-
+    print("fetched capy")
 
 def fetch_cat():
+    print("Fetching cat")
     # Step 1: Get a random cat image ID
     response = requests.get(
         "https://api.thecatapi.com/v1/images/search?limit=1",
@@ -63,18 +67,20 @@ def fetch_cat():
     json_data = response.json()
     breeds_data = json_data.get("breeds", [])
     if breeds_data:
-        breed_name = breeds_data[0].get("name", "Unknown")
-        description = breeds_data[0].get("description", "No description available.")
+        breed_name = breeds_data[0].get("name", "None available")
+        description = breeds_data[0].get("description", "None available")
     else:
-        breed_name = "Unknown"
-        description = "No description available."
+        breed_name = "None available"
+        description = "None available"
 
     cattitude = random.randint(6, 10)
 
     process_image(image_response.content, "/var/www/goodboy.robot64.com/fetch/cat.jpg")
-    save_text(f"{breed_name}\n{description}", cattitude, "/var/www/goodboy.robot64.com/fetch/cat.txt")
+    save_text(f"{breed_name}", cattitude, "/var/www/goodboy.robot64.com/fetch/cat.txt")
+    print("Fetched cat")
 
 def process_image(image_content, save_path):
+    print("Processing image")
     # Open image from bytes
     image = Image.open(BytesIO(image_content))
     
@@ -95,10 +101,18 @@ def process_image(image_content, save_path):
     image_resized.save(save_path, format="JPEG")
 
 def save_text(description, score, save_path):
+    print("Saving scores")
     with open(save_path, 'w') as file:
         file.write(f"{description}\n{score}")
 
+def runInParallel(*fns):
+  proc = []
+  for fn in fns:
+    p = Process(target=fn)
+    p.start()
+    proc.append(p)
+  for p in proc:
+    p.join()
+
 if __name__ == "__main__":
-    fetch_dog()
-    fetch_capy()
-    fetch_cat()
+    runInParallel(fetch_cat, fetch_dog, fetch_capy)
