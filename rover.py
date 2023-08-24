@@ -86,16 +86,20 @@ def handle_subscription(person_id, person_email, room_id):
         "personEmail": person_email,
         "personId": person_id,
         "subscribedTime": datetime.now(),
-        "roomId": room_id
+        "roomId": room_id,
+        "animals": {
+            "dog": True,
+            "cat": False,
+            "capy": False
+        }
     }
     #existing_subscriber = subscribers_collection.find_one({"personId": person_id})
     existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
     if existing_subscriber_by_room:
         return "This room is already subscribed! (If this is wrong, ping Matt)"
-    #if existing_subscriber:
-    #    return "Hey! You're already subscribed! (If this is wrong, ping Matt)"
-
-    subscribers_collection.insert_one(subscriber)
+        #if existing_subscriber:
+        #    return "Hey! You're already subscribed! (If this is wrong, ping Matt)"
+        subscribers_collection.insert_one(subscriber)
     return "You've successfully subscribed to the Daily Good Boy!"
 
 def handle_unsubscription(room_id):
@@ -105,6 +109,74 @@ def handle_unsubscription(room_id):
         return "You've successfully unsubscribed from the Daily Good Boy!"
     else:
         return "You are not yet subscribed - nothing to do. If this is in error, ping Matt"
+
+
+
+def enable_catperson(room_id):
+    existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
+    if existing_subscriber_by_room:
+        subscribers_collection.update_one(
+            {"roomId": room_id},
+            {"$set": {"animals.cat": True}}
+        )
+        return "Hey cat person! You've enabled cat updates for this room. Use 'disable cat' to do the opposite. 'Help' for more. 'unsubscribe' or 'stop' to stop all."
+    else:
+        return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
+
+def enable_dogperson(room_id):
+    existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
+    if existing_subscriber_by_room:
+        subscribers_collection.update_one(
+            {"roomId": room_id},
+            {"$set": {"animals.dog": True}}
+        )
+        return "Hey dog person! You've enabled dog updates for this room. Use 'disable dog' to do the opposite (but you wouldn't, would you?!). 'Help' for more. 'unsubscribe' or 'stop' to stop all."
+    else:
+        return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
+
+def enable_capyperson(room_id):
+    existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
+    if existing_subscriber_by_room:
+        subscribers_collection.update_one(
+            {"roomId": room_id},
+            {"$set": {"animals.capy": True}}
+        )
+        return "Hey capy person! You've enabled capy updates for this room. Use 'disable capy' to do the opposite (how could you?!). 'Help' for more. 'unsubscribe' or 'stop' to stop all."
+    else:
+        return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
+
+def disable_dogperson(room_id):
+    existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
+    if existing_subscriber_by_room:
+        subscribers_collection.update_one(
+            {"roomId": room_id},
+            {"$set": {"animals.dog": False}}
+        )
+        return "Who's a bad dog? Well, no dogs for you, then. You've disabled dog updates for this room. Use 'enable dog' to bring back the good boys. 'Help' for more. 'unsubscribe' or 'stop' to stop all."
+    else:
+        return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
+
+def disable_catperson(room_id):
+    existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
+    if existing_subscriber_by_room:
+        subscribers_collection.update_one(
+            {"roomId": room_id},
+            {"$set": {"animals.cat": False}}
+        )
+        return "No more meows for you. You've disabled cat updates for this room. Use 'enable cat' to welcome back our feline friends. 'Help' for more. 'unsubscribe' or 'stop' to stop all."
+    else:
+        return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
+
+def disable_capyperson(room_id):
+    existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
+    if existing_subscriber_by_room:
+        subscribers_collection.update_one(
+            {"roomId": room_id},
+            {"$set": {"animals.capy": False}}
+        )
+        return "Not cool, human. You've disabled capybara updates for this room. Use 'enable capy' to fix this travesty. 'Help' for more. 'unsubscribe' or 'stop' to stop all."
+    else:
+        return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
 
 @app.route('/barkbarkbark', methods=['POST'])
 def webhook():
