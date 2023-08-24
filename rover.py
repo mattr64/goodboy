@@ -99,7 +99,7 @@ def handle_subscription(person_id, person_email, room_id):
         return "This room is already subscribed! (If this is wrong, ping Matt)"
         #if existing_subscriber:
         #    return "Hey! You're already subscribed! (If this is wrong, ping Matt)"
-        subscribers_collection.insert_one(subscriber)
+    subscribers_collection.insert_one(subscriber)
     return "You've successfully subscribed to the Daily Good Boy!"
 
 def handle_unsubscription(room_id):
@@ -109,7 +109,6 @@ def handle_unsubscription(room_id):
         return "You've successfully unsubscribed from the Daily Good Boy!"
     else:
         return "You are not yet subscribed - nothing to do. If this is in error, ping Matt"
-
 
 
 def enable_catperson(room_id):
@@ -122,7 +121,6 @@ def enable_catperson(room_id):
         return "Hey cat person! You've enabled cat updates for this room. Use 'disable cat' to do the opposite. 'Help' for more. 'unsubscribe' or 'stop' to stop all."
     else:
         return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
-
 def enable_dogperson(room_id):
     existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
     if existing_subscriber_by_room:
@@ -133,7 +131,6 @@ def enable_dogperson(room_id):
         return "Hey dog person! You've enabled dog updates for this room. Use 'disable dog' to do the opposite (but you wouldn't, would you?!). 'Help' for more. 'unsubscribe' or 'stop' to stop all."
     else:
         return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
-
 def enable_capyperson(room_id):
     existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
     if existing_subscriber_by_room:
@@ -144,7 +141,6 @@ def enable_capyperson(room_id):
         return "Hey capy person! You've enabled capy updates for this room. Use 'disable capy' to do the opposite (how could you?!). 'Help' for more. 'unsubscribe' or 'stop' to stop all."
     else:
         return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
-
 def disable_dogperson(room_id):
     existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
     if existing_subscriber_by_room:
@@ -155,7 +151,6 @@ def disable_dogperson(room_id):
         return "Who's a bad dog? Well, no dogs for you, then. You've disabled dog updates for this room. Use 'enable dog' to bring back the good boys. 'Help' for more. 'unsubscribe' or 'stop' to stop all."
     else:
         return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
-
 def disable_catperson(room_id):
     existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
     if existing_subscriber_by_room:
@@ -166,7 +161,6 @@ def disable_catperson(room_id):
         return "No more meows for you. You've disabled cat updates for this room. Use 'enable cat' to welcome back our feline friends. 'Help' for more. 'unsubscribe' or 'stop' to stop all."
     else:
         return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
-
 def disable_capyperson(room_id):
     existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
     if existing_subscriber_by_room:
@@ -177,6 +171,25 @@ def disable_capyperson(room_id):
         return "Not cool, human. You've disabled capybara updates for this room. Use 'enable capy' to fix this travesty. 'Help' for more. 'unsubscribe' or 'stop' to stop all."
     else:
         return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
+
+def get_subscription_status(room_id):
+        existing_subscriber_by_room = subscribers_collection.find_one({"roomId": room_id})
+        if existing_subscriber_by_room:
+            animal_prefs = existing_subscriber_by_room.get("animals", {})
+            dog_status = "enabled" if animal_prefs.get("dog", False) else "disabled"
+            cat_status = "enabled" if animal_prefs.get("cat", False) else "disabled"
+            capy_status = "enabled" if animal_prefs.get("capy", False) else "disabled"
+
+            return f"""Subscription status for this room:
+- Dog updates: {dog_status}
+- Cat updates: {cat_status}
+- Capy updates: {capy_status}
+
+Use 'enable [animal]' or 'disable [animal]' to change these settings.
+'Help' for more commands. 
+'Unsubscribe' or 'stop' to stop all."""
+        else:
+            return "You've not subscribed this room yet. Please send me a subscribe command, then enable or disable options. By subscribing, you give consent to store these preferences, so it is a required first step."
 
 @app.route('/barkbarkbark', methods=['POST'])
 def webhook():
@@ -236,10 +249,47 @@ def webhook():
         response_message = "Help message (bark bark)\n\nTo subscribe to a daily image of a dog (7AM UK time each morning, unguaranteed), reply 'subscribe'.\n\nThis is totally for fun and not in any way guaranteed. The images are from an external source (The Dog CEO API - yeah I didn't know it existed either) and are unvetted and uncontrolled. This may stop working at any time.\n\nIf I go haywire please tell my master, Matt (mabarber@).\nIf you need to unsubscribe, write 'unsubscribe' anywhere in a message.\nTry some other commands - I maybe trained, after all, I am a very good boy!! Bark Bark Bark\n\n\n"
         send_message_to_webex(room_id, response_message)
     elif 'hello' in message_text:
-        response_message = "Help message (bark bark)\n\nTo subscribe to a daily image of a dog (7AM UK time each morning, unguaranteed), reply 'subscribe'.\n\nThis is totally for fun and not in any way guaranteed. The images are from an external source (The Dog CEO API - yeah I didn't know it existed either) and are unvetted and uncontrolled. This may stop working at any time.\n\nIf I go haywire please tell my master, Matt (mabarber@).\nIf you need to unsubscribe, write 'unsubscribe' anywhere in a message.\nTry some other commands - I maybe trained, after all, I am a very good boy!! Bark Bark Bark\n\n\n"
+        response_message = """Help message (bark bark)
+        To subscribe to daily delivery, reply 'subscribe'
+        To stop messages and remove your preferences, reply 'unsubscribe' or 'stop'
+        To check your subscriptions, reply 'status'
+
+        Setting individual preferences
+        'enable dog':  Get daily dog deliveries
+        'enable cat':  Get daily cat deliveries
+        'enable capy': Get daily capybara deliveries
+        'disable dog', 'disable cat', 'disable capy' will stop that particular channel.
+        """
         send_message_to_webex(room_id, response_message)
+        
     elif 'about' in message_text:
-        response_message = "About this bot\n\nA 'for fun' project which after the dawn of OpenAI pair programming I can finally realise and have fun making. Learning loads about Webex API, webhooks in general and Python, here is the Good Boy Bot.\n\nUntil I break it.\n"
+        response_message = """About this bot
+        A 'for fun' project which, after the dawn of OpenAI pair programming I can finally realise and have fun making.
+        Learning loads about Webex API and Python, here is the Good Boy Bot.\n\nUntil I break it.\n
+        """
+        send_message_to_webex(room_id, response_message)
+    
+    # Individual service enable and disable handling
+    if 'enable cat' in message_text:
+        response_message = enable_catperson(room_id)
+        send_message_to_webex(room_id, response_message)
+    if 'enable capy' in message_text:
+        response_message = enable_capyperson(room_id)
+        send_message_to_webex(room_id, response_message)
+    if 'enable dog' in message_text:
+        response_message = enable_dogperson(room_id)
+        send_message_to_webex(room_id, response_message)
+    if 'disable cat' in message_text:
+        response_message = disable_catperson(room_id)
+        send_message_to_webex(room_id, response_message)
+    if 'disable capy' in message_text:
+        response_message = disable_capyperson(room_id)
+        send_message_to_webex(room_id, response_message)
+    if 'disable dog' in message_text:
+        response_message = disable_dogperson(room_id)
+        send_message_to_webex(room_id, response_message)
+    if 'status' in message_text:
+        response_message = get_subscription_status(room_id)
         send_message_to_webex(room_id, response_message)
 
     # stupid responses that will hopefully entertain
@@ -279,7 +329,7 @@ def webhook():
     elif 'speak' in message_text:
         response_message = "Bark! Woof! Ruff ruff! 🗣️"
         send_message_to_webex(room_id, response_message)
-
+    
     return '', 204
 
 if __name__ == '__main__':
