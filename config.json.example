@@ -1,0 +1,12 @@
+{
+    "webex_bot_access_token": "aaaa-ffff",
+    "webex_bot_system_id": "aaaa-ffff",
+    "webex_bot_person_id": "aaaa-ffff",
+    "webex_webhook_url": "https://webexapis.com/v1/webhooks",
+    "bot_webhook_url": "https://run.here.example.local/barkbarkbark",
+    "db_username": "admin",
+    "db_password": "aaaa-ffff",
+    "db_name": "aaaa-ffff",
+    "db_collection": "subscribers",
+    "cat_api_key": "aaaa-ffff"
+}

@@ -21,6 +21,7 @@ import requests
 import json
 from pymongo import MongoClient
 from webexteamssdk import WebexTeamsAPI
+import threading
 
 # Load external config file, as to not store secrets in the code
 # We replace them below with those loaded in from 'config'
@@ -74,6 +75,16 @@ def create_webhook(url):
     }
     response = requests.post(WEBEX_WEBHOOK_URL, json=payload, headers=headers)
     print("Webhook created:", response.json())
+    if 'created' in response.json():
+        print(f"Webhook created at: {response.json()['created']}")
+    if 'expires' in response.json():  # if the API provides expiration info
+        print(f"Webhook expires at: {response.json()['expires']}")
+
+def refresh_webhook():
+    delete_existing_webhooks()
+    create_webhook(YOUR_WEBHOOK_URL)
+    # call this function again in one hour
+    threading.Timer(3600, refresh_webhook).start()
 
 def send_message_to_webex(room_id, message):
     api.messages.create(roomId=room_id, markdown=message)
@@ -200,6 +211,8 @@ def webhook():
     person_id = data['data']['personId']
     person_email = data['data']['personEmail']
     room_id = data['data']['roomId']
+    print("Headers:")
+    print(request.headers)
     
     # Fetch the message details using message_id
     message_url = f"https://webexapis.com/v1/messages/{message_id}"
@@ -335,10 +348,11 @@ def webhook():
     elif 'hup' in message_text:
         response_message = "OK I pull up"
         send_message_to_webex(room_id, response_message)
-    
+    elif 'good boy' in message_text:
+        response_message = "*Wags tail*"
+        send_message_to_webex(room_id, response_message) 
     return '', 204
 
 if __name__ == '__main__':
-    delete_existing_webhooks()          # Delete existing webhooks before starting
-    create_webhook(YOUR_WEBHOOK_URL)    # Create a new webhook
+    refresh_webhook()                   # Init first webhook and refresh every hour
     app.run(port=5000)                  # We front with NGINX HTTPS, so we just run HTTP here on localhost

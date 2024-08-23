@@ -93,6 +93,7 @@ def process_image(image_content, save_path):
     image = Image.open(BytesIO(image_content))
     
     # Convert Palette-based ('P') images to RGB
+    if image.mode in ("RGBA", "P"): image = image.convert("RGB") 
     if image.mode == 'P':
         image = image.convert("RGB")
         
