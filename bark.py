@@ -11,9 +11,14 @@ import os
 import json
 from concurrent.futures import ThreadPoolExecutor
 import time
+import os
+from pathlib import Path
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, 'config.json')
 
 # Go get secrets from the config
-with open('/opt/gbb/config.json') as f:
+with open(config_path) as f:
     config = json.load(f)
 
 # Map some variables from the loaded config
@@ -31,7 +36,7 @@ def get_image(animal_type):
 def get_breed_and_score(animal_type):
     score_type = "GoodBoy" if animal_type == 'dog' else "Cattitude" if animal_type == 'cat' else "Chill"
     credit = "Dog.CEO API" if animal_type == 'dog' else "TheCatAPI.com" if animal_type == 'cat' else "Capy.lol API"
-    with open(f'/var/www/goodboy.robot64.com/fetch/{animal_type}.txt', 'r') as file:
+    with open(f'/var/www/goodboy/fetch/{animal_type}.txt', 'r') as file:
         breed = file.readline().strip()
         score = file.readline().strip()
     return breed, score, score_type, credit
@@ -40,7 +45,7 @@ def get_dog_image():
     return "https://goodboy.robot64.com/fetch/dog.jpg"
 
 def get_breed_and_goodness_score():
-    with open('/var/www/goodboy.robot64.com/fetch/breed.txt', 'r') as file:
+    with open('/var/www/goodboy/fetch/breed.txt', 'r') as file:
         breed = file.readline().strip()
         goodness_score = file.readline().strip()
     return breed, goodness_score
@@ -188,7 +193,7 @@ def send_daily_good_boy():
         results = list(executor.map(send_message, subscribers))
 
 def send_daily_good_boy_just_matt():
-    subscribers = subscribers_collection.find( { "roomId": "Y2lzY29zcGFyazovL3VzL1JPT00vOWYyOTA0ZTAtM2ZmZi0xMWVlLWFmZjAtZmJmMjVlMmIzODBj" } )
+    subscribers = subscribers_collection.find( { "roomId": "Y2lzY29zcGFyazovL3VzL1JPT00vZDVlOTc4MDAtM2QzNi0xMWVlLWFlY2YtNDFlZDFiOTZiNDcx" } )
       # Define the number of workers for the ThreadPoolExecutor
     workers = 15
     # Use a ThreadPoolExecutor to send messages in parallel

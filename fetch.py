@@ -1,4 +1,5 @@
 # Stop trying to make fetch happen
+import os
 import requests
 from PIL import Image
 from io import BytesIO
@@ -6,9 +7,14 @@ import re
 import random
 import json
 from multiprocessing import Process
+from pathlib import Path
 
 # Go get secrets from the config
-with open('/opt/gbb/config.json') as f:
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, 'config.json')
+
+with open(config_path) as f:
     config = json.load(f)
 # Use the cat API in the secrets file
 cat_api_token = config['cat_api_key']
@@ -32,8 +38,8 @@ def fetch_dog():
         breed = ' '.join(breed_words)
 
     goodness_score = random.randint(10, 16)
-    process_image(image_response.content, "/var/www/goodboy.robot64.com/fetch/dog.jpg")
-    save_text(breed, goodness_score, "/var/www/goodboy.robot64.com/fetch/dog.txt")
+    process_image(image_response.content, "/var/www/goodboy/fetch/dog.jpg")
+    save_text(breed, goodness_score, "/var/www/goodboy/fetch/dog.txt")
     print("fetched dog")
 
 # Use the capy.lol api to grab the capy of the day
@@ -47,8 +53,8 @@ def fetch_capy():
 
     capy_chill = random.randint(8, 15)
     description = capy_data['alt']
-    process_image(image_response.content, "/var/www/goodboy.robot64.com/fetch/capy.jpg")
-    save_text(description, capy_chill, "/var/www/goodboy.robot64.com/fetch/capy.txt")
+    process_image(image_response.content, "/var/www/goodboy/fetch/capy.jpg")
+    save_text(description, capy_chill, "/var/www/goodboy/fetch/capy.txt")
     print("fetched capy")
 
 # Use the cat API to fetch the cat of the day
@@ -81,8 +87,8 @@ def fetch_cat():
     # Use extremely advanced algorithms to generate the cattitude score
     cattitude = random.randint(6, 10)
 
-    process_image(image_response.content, "/var/www/goodboy.robot64.com/fetch/cat.jpg")
-    save_text(f"{breed_name}", cattitude, "/var/www/goodboy.robot64.com/fetch/cat.txt")
+    process_image(image_response.content, "/var/www/goodboy/fetch/cat.jpg")
+    save_text(f"{breed_name}", cattitude, "/var/www/goodboy/fetch/cat.txt")
     print("Fetched cat")
 
 # Image processing is abstracted out to a function as all three animals use it

@@ -355,4 +355,4 @@ def webhook():
 
 if __name__ == '__main__':
     refresh_webhook()                   # Init first webhook and refresh every hour
-    app.run(port=5000)                  # We front with NGINX HTTPS, so we just run HTTP here on localhost
+    app.run(host='0.0.0.0', port=9900)                  # We front with NGINX HTTPS, so we just run HTTP here on localhost
