@@ -26,7 +26,7 @@ dbusername = config['db_username']
 dbpassword = config['db_password']
 BOT_TOKEN = config['webex_bot_access_token']
 
-client = MongoClient(f"mongodb://{dbusername}:{dbpassword}@localhost:27017/")
+client = MongoClient(f"mongodb://{dbusername}:{dbpassword}@localhost:27017/?authSource=goodboy")
 db = client['goodboy']
 subscribers_collection = db['subscribers']
 

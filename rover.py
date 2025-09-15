@@ -38,7 +38,7 @@ dbpassword = config['db_password']
 
 api = WebexTeamsAPI(access_token=BOT_TOKEN)
 
-client = MongoClient(f"mongodb://{dbusername}:{dbpassword}@localhost:27017/")
+client = MongoClient(f"mongodb://{dbusername}:{dbpassword}@localhost:27017/?authSource=goodboy")
 db = client['goodboy']
 subscribers_collection = db['subscribers']
 
